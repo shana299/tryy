@@ -20,7 +20,7 @@ linreg.formula <- function(formula, data, add_intercept = TRUE) {
   residual_variance <- as.numeric((t(residuals) %*% residuals) / df)
   variance_coeff <- residual_variance * solve(t(X) %*% X)
   t_values <- coefficients / sqrt(diag(variance_coeff))
-  p_values <- sapply(2*(1 - pt(t_values/2, df)), function(x) {if(x < 2e-16) {"<2e-16"} else x})
+  p_values <- sapply(2*(1 - pt(abs(t_values), df)), function(x) {if(x < 2e-16) {"<2e-16"} else x})
   
   return_object <- list(call = call, coefficients = coefficients, fitted_values = preds,
                         residuals = residuals, df = df, residual_variance = residual_variance,
