@@ -1,3 +1,5 @@
+#' @export
+
 # define model.matrix S3 method for data.frame objects
 
 model.matrix.data.frame <- function(data, formula, add_intercept, ...) {

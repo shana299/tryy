@@ -1,11 +1,17 @@
-#' @import ggplot2
+#' @exportClass linreg
+#' @export new_linreg
+#' @export linreg
 
-# create generic functions needed
-linreg <- function(x, ...) UseMethod("linreg")
+# build a 'linreg' class constructor
 
-# create specific methods
+new_linreg <- function(x = list()) {
+  stopifnot(is.list(x))
+  structure(x, class = "linreg")
+}
 
-linreg.formula <- function(formula, data, add_intercept = TRUE, qr_method = FALSE) {
+# create main function to build the linear regression model
+
+linreg <- function(formula, data, add_intercept = TRUE, qr_method = FALSE) {
   
   # process data
   processed_data <- model.matrix(data, formula, add_intercept)
@@ -49,94 +55,6 @@ linreg.formula <- function(formula, data, add_intercept = TRUE, qr_method = FALS
   return_object <- list(call = match.call(), coefficients = coefficients, fitted_values = preds,
                         residuals = residuals, df = df, residual_variance = residual_variance,
                         variance_of_coefficients = variance_coeff, t_values = t_values, p_values = p_values)
-  class(return_object) <- "linreg"
   
-  return(return_object)
-}
-
-print.linreg <- function(x, ...) {
-  cat("Call:\n")
-  print(x$call)
-  cat("\n\nCoefficients:\n")
-  named_coeff_vector <- as.vector(x$coefficients)
-  names(named_coeff_vector) <- names(x$coefficients)
-  print(named_coeff_vector)
-}
-
-plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
-  
-  require(ggplot2) # needing to use this despite adding ggplot2 to DESCRIPTION file under Imports via usethis::use_package("ggplot2")
-  
-  df_for_plot <- data.frame(fitted_values = x$fitted_values, residuals = x$residuals)
-  top_n <- order(abs(x$residuals), decreasing = TRUE)[1:num_labels]
-  
-  # plot Residuals Vs Fitted
-
-  if (!labels_by_val) {
-    
-    p1 <- ggplot(df_for_plot, aes(x=fitted_values, y=residuals)) +
-      geom_smooth(method="loess", aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) +
-      geom_point(shape = 1) + labs(title="Residuals Vs Fitted", y="Residuals", x="Fitted values") +
-      theme(plot.title = element_text(hjust = 0.5)) + theme_classic() + 
-      geom_hline(yintercept = 0, linetype="dotted") + 
-      geom_text(data=df_for_plot[top_n, ], aes(label=rownames(df_for_plot[top_n, ])), nudge_x = 0.2)
-    
-  } else {
-    
-    p1 <- ggplot(df_for_plot, aes(x=fitted_values, y=residuals, label=residuals)) +
-      geom_smooth(method="loess", aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) +
-      geom_point(shape = 1) + labs(title="Residuals Vs Fitted", y="Residuals", x="Fitted values") +
-      theme(plot.title = element_text(hjust = 0.5)) + theme_classic() +
-      geom_hline(yintercept = 0, linetype="dotted") + 
-      geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2)
-  
-  }
-
-  # plot Scale-Location
-  
-  df_for_plot$std_res <- (df_for_plot$residual - mean(df_for_plot$residual))/sd(df_for_plot$residual)
-  
-  if (!labels_by_val) {
-    
-    p2 <- ggplot(df_for_plot, aes(x=fitted_values, y=sqrt(abs(std_res)))) + geom_point(shape = 1) +
-      geom_smooth(method="loess", aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) + 
-      labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), x="Fitted values") +
-      theme(plot.title = element_text(hjust = 0.5)) + theme_classic() + 
-      geom_text(data=df_for_plot[top_n, ], aes(label=rownames(df_for_plot[top_n, ])), nudge_x = 0.2)
-    
-  } else {
-    
-    p2 <- ggplot(df_for_plot, aes(x=fitted_values, y=sqrt(abs(std_res)))) + geom_point(shape = 1) +
-      geom_smooth(method="loess", aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) + 
-      labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), x="Fitted values") +
-      theme(plot.title = element_text(hjust = 0.5)) + theme_classic() + 
-      geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2)
-    
-  }
-  
-  suppressWarnings(plot(p1))
-  suppressWarnings(plot(p2))
-    
-}
-
-resid.linreg <- function(x, ...) {x$residuals}
-
-pred.linreg <- function(x, ...) {x$fitted_values}
-
-coef.linreg <- function(x, ...) {
-  named_coeff_vector <- as.vector(x$coefficients)
-  names(named_coeff_vector) <- names(x$coefficients)
-  print(named_coeff_vector)
-}
-
-summary.linreg <- function(x, ...) {
-  summ_df <- as.data.frame(x$coefficients)
-  summ_df[, 2] <- sqrt(diag(x$variance_of_coefficients))
-  summ_df[, 3] <- x$t_values
-  summ_df[, 4] <- x$p_values
-  colnames(summ_df) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
-  cat("Coefficients:\n")
-  print(summ_df)
-  cat("---\n")
-  cat("Residual standard error:", sqrt(x$residual_variance), "on", x$df, "degrees of freedom")
+  return(new_linreg(return_object))
 }
