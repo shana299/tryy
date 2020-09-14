@@ -1,30 +1,15 @@
+#' @export model.matrix
+
+# generic
+model.matrix <- function(X, ...) UseMethod("model.matrix")
+
 #' @export
 
-# define model.matrix S3 method for data.frame objects
-
-model.matrix.data.frame <- function(data, formula, add_intercept, ...) {
-  
-  # parse formula to get all regression (independent) variables along with the response (dependent) variable
-  all_vars <- all.vars(formula)
-  
-  # extract dependent variable, viz. all_vars[1]
-  y <- data[, all_vars[1]]
-  
-  # check that dependent variable is numeric, else print an error message
-  if (!is.numeric(y)) stop("Dependent variable must be numeric")
-  
-  # check if independent variables (viz. all_vars[-1]) are neither numeric nor factor, if so print an error message
-  indep_var_classes <- sapply(all_vars[-1], function(x) {class(data[, x])})
-  indep_var_classes_unique <- unique(indep_var_classes)
-  
-  if(!all(indep_var_classes %in% c("factor", "numeric"))) stop("Independent variables can only either be numeric or factor types")
-  
-  # extract indepedent variables, viz. all_vars[-1]
-  X <- data[, colnames(data) %in% all_vars[-1], drop=FALSE]
+# s3 method
+model.matrix.data.frame <- function(X, factor_indep_vars, add_intercept, ...) {
   
   # run one-hot encoding for 'factor' type independent variables
-  factor_indep_vars <- names(indep_var_classes[indep_var_classes == "factor"])
-  
+  print(factor_indep_vars)
   for (var in factor_indep_vars) {
     
     factor_levels <- levels(X[, var])
@@ -46,5 +31,5 @@ model.matrix.data.frame <- function(data, formula, add_intercept, ...) {
     colnames(X)[1] <- "(Intercept)"
   }
   
-  return(list(X = as.matrix(X), y = y))
+  return(as.matrix(X))
 }

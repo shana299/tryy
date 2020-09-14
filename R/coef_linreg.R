@@ -1,4 +1,11 @@
+#' @export coef
+
+# generic
+coef <- function(x) UseMethod("coef")
+
 #' @export
+
+# s3 method
 
 coef.linreg <- function(x, ...) {
   named_coeff_vector <- as.vector(x$coefficients)

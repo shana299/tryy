@@ -1,4 +1,11 @@
+#' @export summary
+
+# generic
+summary <- function(x) UseMethod("summary")
+
 #' @export
+
+# s3 method
 
 summary.linreg <- function(x, ...) {
   summ_df <- as.data.frame(x$coefficients)

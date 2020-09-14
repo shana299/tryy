@@ -1,5 +1,6 @@
 #' @exportClass linreg
 #' @export new_linreg
+#' @import stats
 #' @export linreg
 
 # build a 'linreg' class constructor
@@ -9,15 +10,35 @@ new_linreg <- function(x = list()) {
   structure(x, class = "linreg")
 }
 
-# create main function to build the linear regression model
-
-linreg <- function(formula, data, add_intercept = TRUE, qr_method = FALSE) {
+# main function: linreg
+linreg <- function(formula, data, qr_method = FALSE, ...) {
+  
+  # check class of data input
+  if (class(data) != "data.frame") stop("Data must be input in the data.frame format")
+  
+  # parse formula to get all regression (independent) variables along with the response (dependent) variable
+  all_vars <- all.vars(formula)
   
   # process data
-  processed_data <- model.matrix(data, formula, add_intercept)
-  y <- processed_data$y # dependent (response) variable
-  X <- processed_data$X # design matrix
+  y <- data[, all_vars[1]]
   
+  # check that dependent variable is numeric, else print an error message
+  if (!is.numeric(y)) stop("Dependent variable must be numeric")
+  
+  # check if independent variables (viz. all_vars[-1]) are neither numeric nor factor, if so print an error message
+  indep_var_classes <- sapply(all_vars[-1], function(x) {class(data[, x])})
+  indep_var_classes_unique <- unique(indep_var_classes)
+  
+  if(!all(indep_var_classes %in% c("factor", "numeric"))) stop("Independent variables can only either be numeric or factor types")
+  
+  # extract independent variables, viz. all_vars[-1]
+  X <- data[, all_vars[-1], drop=FALSE]
+  
+  # get design matrix
+  add_intercept <- if (length(list(...)) > 0) {FALSE} else {TRUE}
+  factor_indep_vars <- names(indep_var_classes[indep_var_classes == "factor"])
+  X <- model.matrix(X, factor_indep_vars, add_intercept)
+
   # check for design matrix invertibility issues
   invert_issue <- suppressWarnings(!(class(try(solve(t(X) %*% X), silent = FALSE))[1] == "matrix"))
   
@@ -49,7 +70,7 @@ linreg <- function(formula, data, add_intercept = TRUE, qr_method = FALSE) {
   }
   
   t_values <- coefficients / sqrt(diag(variance_coeff))
-  p_values <- sapply(2*(1 - pt(abs(t_values), df)), function(x) {if(x < 2e-16) {"<2e-16"} else x})
+  p_values <- sapply(2*(1 - stats::pt(abs(t_values), df)), function(x) {if(x < 2e-16) {"<2e-16"} else x})
   
   # assemble and return output object
   return_object <- list(call = match.call(), coefficients = coefficients, fitted_values = preds,
