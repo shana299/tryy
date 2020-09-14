@@ -1,4 +1,4 @@
-Package: linear_regression
+Package: linear.regression
 Type: Package
 Title: Implements Linear Regression via OLS and QR Decomposition
 Version: 1.0
