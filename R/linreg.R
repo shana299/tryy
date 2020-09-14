@@ -27,7 +27,7 @@ linreg.formula <- function(formula, data, add_intercept = TRUE, qr_method = FALS
     
   } else { # with QR
   
-    if (invert_issue) {"*** Using QR Method for solution ***"}
+    if (invert_issue) {print("*** Using QR Method for solution ***")}
     df <- nrow(X) - ncol(X)
     X <- qr(X)
     R <- qr.R(X)
