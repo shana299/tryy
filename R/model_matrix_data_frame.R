@@ -1,12 +1,23 @@
-#' @export model.matrix
+#' @title S3 Generic function - rewritten
+#' @param X an object
+#' @param factor_indep_vars an object
+#' @param add_intercept an object
+#' @seealso \link{model.matrix.data.frame}
+#' @export
 
-# generic
-model.matrix <- function(X, ...) UseMethod("model.matrix")
+model.matrix <- function(X, factor_indep_vars, add_intercept) UseMethod("model.matrix")
 
+#' @title Get Design Matrix
+#' @description An S3 function to return a design matrix given a \code{data.frame} and
+#' a linear regression \code{formula}
+#' @param X a \code{data.frame}
+#' @param factor_indep_vars a vector of names of independent variables whose classes are of \code{factor} type
+#' @param add_intercept a boolean; TRUE requires the design matrix to include a column for an intercept
+#' @return the design matrix
 #' @export
 
 # s3 method
-model.matrix.data.frame <- function(X, factor_indep_vars, add_intercept, ...) {
+model.matrix.data.frame <- function(X, factor_indep_vars, add_intercept) {
   
   # run one-hot encoding for 'factor' type independent variables
   

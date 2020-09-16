@@ -1,8 +1,18 @@
 #' @import ggplot2
-#' @export
 #' @import stats
 
+#' @title Plots of Linear Regression Residuals
+#' @description An S3 function to return plots from a \code{linreg} object
+#' @param x an object of class \code{linreg}
+#' @param num_labels an integer, specifying the number of extreme residuals to label
+#' @param labels_by_val a boolean; TRUE forces the function to label selected extreme points by value
+#' @param ... additional arguments
+#' @return a vector containing the regression coefficients
+#' @export
+
 plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
+  
+  fitted_values <- std_res <- NULL
   
   # add ggplot2 to DESCRIPTION file under Imports via usethis::use_package("ggplot2")
   

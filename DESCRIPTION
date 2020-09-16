@@ -5,7 +5,7 @@ Version: 1.0
 Date: 2020-09-10
 Author: Rojan and Shashi
 Maintainer: <shashiniyer@gmail.com>, <rojankarakaya@gmail.com>
-Description: There are two methods for implementing: OLS and QR Decomposition
+Description: There are two methods for implementing: OLS and QR Decomposition.
 License: GPL-3 + file LICENSE
 RoxygenNote: 7.1.1
 Encoding: UTF-8
