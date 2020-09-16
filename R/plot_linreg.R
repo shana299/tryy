@@ -12,7 +12,7 @@
 
 plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
   
-  fitted_values <- std_res <- NULL
+  fitted_values <- std_res <- NULL # provide binding and prevent devtools::check() from returning a related note
   
   # add ggplot2 to DESCRIPTION file under Imports via usethis::use_package("ggplot2")
   
