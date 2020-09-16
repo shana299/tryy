@@ -9,7 +9,7 @@ model.matrix <- function(X, ...) UseMethod("model.matrix")
 model.matrix.data.frame <- function(X, factor_indep_vars, add_intercept, ...) {
   
   # run one-hot encoding for 'factor' type independent variables
-  print(factor_indep_vars)
+  
   for (var in factor_indep_vars) {
     
     factor_levels <- levels(X[, var])
