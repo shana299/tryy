@@ -18,7 +18,7 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
                            show.legend = FALSE, formula = y~x) +
       ggplot2::geom_point(shape = 1) +
       ggplot2::labs(title="Residuals Vs Fitted", y="Residuals", x="Fitted values") +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + ggplot2::theme_classic() + 
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() + 
       ggplot2::geom_hline(yintercept = 0, linetype="dotted") + 
       ggplot2::geom_text(data=df_for_plot[top_n, ], ggplot2::aes(label=rownames(df_for_plot[top_n, ])), nudge_x = 0.2)
     
@@ -29,7 +29,7 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
                            show.legend = FALSE, formula = y~x) +
       ggplot2::geom_point(shape = 1) +
       ggplot2::labs(title="Residuals Vs Fitted", y="Residuals", x="Fitted values") +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + ggplot2::theme_classic() +
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() +
       ggplot2::geom_hline(yintercept = 0, linetype="dotted") + 
       ggplot2::geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2)
     
@@ -47,7 +47,7 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
                            show.legend = FALSE, formula = y~x) + 
       ggplot2::labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), 
                     x="Fitted values") +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + ggplot2::theme_classic() + 
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() + 
       ggplot2::geom_text(data=df_for_plot[top_n, ], ggplot2::aes(label=rownames(df_for_plot[top_n, ])), 
                          nudge_x = 0.2)
     
@@ -59,8 +59,8 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
                            show.legend = FALSE, formula = y~x) + 
       ggplot2::labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), 
                     x="Fitted values") +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + ggplot2::theme_classic() + 
-      ggplot2::geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2) + theme_liu()
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() + 
+      ggplot2::geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2)
     
   }
   
