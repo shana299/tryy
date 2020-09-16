@@ -60,7 +60,7 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
       ggplot2::labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), 
                     x="Fitted values") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + ggplot2::theme_classic() + 
-      ggplot2::geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2)
+      ggplot2::geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2) + theme_liu()
     
   }
   
