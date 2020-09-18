@@ -24,8 +24,8 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
   if (!labels_by_val) {
     
     p1 <- ggplot2::ggplot(df_for_plot, ggplot2::aes(x=fitted_values, y=residuals)) +
-      ggplot2::geom_smooth(method="loess", ggplot2::aes(colour="red"), se = FALSE, 
-                           show.legend = FALSE, formula = y~x) +
+      ggplot2::stat_smooth(data=df_for_plot[-top_n, ], method="loess", geom = "line", 
+                           ggplot2::aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) +
       ggplot2::geom_point(shape = 1) +
       ggplot2::labs(title="Residuals Vs Fitted", y="Residuals", x="Fitted values") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() + 
@@ -35,8 +35,8 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
   } else {
     
     p1 <- ggplot2::ggplot(df_for_plot, ggplot2::aes(x=fitted_values, y=residuals, label=residuals)) +
-      ggplot2::geom_smooth(method="loess", ggplot2::aes(colour="red"), se = FALSE, 
-                           show.legend = FALSE, formula = y~x) +
+      ggplot2::stat_smooth(data=df_for_plot[-top_n, ], method="loess", geom = "line",
+                           ggplot2::aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) +
       ggplot2::geom_point(shape = 1) +
       ggplot2::labs(title="Residuals Vs Fitted", y="Residuals", x="Fitted values") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() +
@@ -53,8 +53,8 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
     
     p2 <- ggplot2::ggplot(df_for_plot, ggplot2::aes(x=fitted_values, y=sqrt(abs(std_res)))) +
       ggplot2::geom_point(shape = 1) +
-      ggplot2::geom_smooth(method="loess", ggplot2::aes(colour="red"), se = FALSE, 
-                           show.legend = FALSE, formula = y~x) + 
+      ggplot2::stat_smooth(data=df_for_plot[-top_n, ], method="loess", geom = "line",
+                          ggplot2::aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) + 
       ggplot2::labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), 
                     x="Fitted values") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() + 
@@ -65,8 +65,8 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
     
     p2 <- ggplot2::ggplot(df_for_plot, ggplot2::aes(x=fitted_values, y=sqrt(abs(std_res)))) + 
       ggplot2::geom_point(shape = 1) +
-      ggplot2::geom_smooth(method="loess", ggplot2::aes(colour="red"), se = FALSE, 
-                           show.legend = FALSE, formula = y~x) + 
+      ggplot2::stat_smooth(data=df_for_plot[-top_n, ], method="loess", geom = "line",
+                           ggplot2::aes(colour="red"), se = FALSE, show.legend = FALSE, formula = y~x) + 
       ggplot2::labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), 
                     x="Fitted values") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() + 
