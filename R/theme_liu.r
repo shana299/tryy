@@ -4,6 +4,15 @@
 
 theme_liu <- function(){
   #
+  #LiU:s colors are (top 3 are primary, next 4 are secondary):
+  # '#00b1d9', 
+  # '#01bfc8', 
+  # '#00c6af',
+  #
+  # '#fa5133', 
+  # '#877ad1', 
+  # '#f4e748', 
+  # '#617a8e'
   theme_minimal() %+replace%    
     
     theme(
