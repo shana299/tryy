@@ -13,6 +13,6 @@ theme_liu <- function(){
       axis.ticks = element_blank(),          
       
       
-      panel.background = element_rect(fill = '#FFFFFF', colour = '#00c6af', size = 2)
+      panel.background = element_rect(fill = '#FFFFFF', colour = '#00b1d9', size = 2)
     )
 }
