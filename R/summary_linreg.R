@@ -7,6 +7,7 @@
 
 summary.linreg <- function(object, ...) {
   summ_df <- as.data.frame(object$coefficients)
+  summ_df[, 1] <- round(as.numeric(summ_df[, 1]), 5)
   summ_df[, 2] <- round(as.numeric(sqrt(diag(object$variance_of_coefficients))), 5)
   summ_df[, 3] <- round(as.numeric(object$t_values), 5)
   summ_df[, 4] <- sapply(object$p_values,
