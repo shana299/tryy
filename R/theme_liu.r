@@ -3,16 +3,16 @@
 #' @export theme_liu
 
 theme_liu <- function(){
-  
-  ggplot2::theme_minimal() %+replace%    
+  #
+  theme_minimal() %+replace%    
     
-    ggplot2::theme(
+    theme(
       
-      panel.grid.major = ggplot2::element_blank(),    
-      panel.grid.minor = ggplot2::element_blank(),    
-      axis.ticks = ggplot2::element_blank(),          
+      panel.grid.major =  element_line(colour = '#f4e748', size = 1, linetype = "dashed", lineend = "square"),   
+      panel.grid.minor = element_line(colour = '#877ad1', size = 0.6, linetype = "dotted", lineend = "square"),    
+      axis.ticks = element_blank(),          
       
       
-      panel.background = ggplot2::element_rect(fill = "red", colour = "green")
+      panel.background = element_rect(fill = '#FFFFFF', colour = '#00c6af', size = 2)
     )
 }
