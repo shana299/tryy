@@ -22,9 +22,50 @@ library(linear.regression)
 
 
 
-Group members:
+### Group members
 
-* Shashi
-  * Nagarajan Iyer
-* Rojan
-  * *Karakaya*
+* Shashi Nagarajan Iyer
+* Rojan Karakaya
+
+
+# Usage
+
+The [linear.regression] package is an attempt at a **limited** reconstruction of the [lm] package.
+
+We define a model using the same notation that we would use for [lm]
+
+```{r}
+data("iris")
+linr = linreg(Petal.Length ~ Species + Sepal.Width, data = iris)
+```
+
+For a quick overview of our model (both the function call and the estimated coefficients) we can use the print(*model*) command:
+
+```{r}
+print(linr)
+```
+
+If we only want a quick glance at the estimated coefficients, coef(*model*) works just as well:
+
+```{r}
+coef(linr)
+```
+
+For a more in-depth summary of our model we use the summary(*model*) function:
+
+```{r}
+summary(linr)
+```
+
+we can get our predicted (i.e. fitted) values with pred(*model*)
+
+```{r}
+head(pred(linr), n=3)
+```
+
+plot(*model*) returns the "Residuals vs Fitted" as well as the "Scale-Location" plots:
+
+```{r}
+plot(linr)
+```
+
