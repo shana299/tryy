@@ -15,7 +15,11 @@ new_linreg <- function(x = list()) {
 
 #' @title Linear Regression
 #' @description The 'linreg' function allows for the linear regression of a dependent variable on
-#' a set of independent variables and see regression coefficients, residuals, and other statistics
+#' a set of independent variables, and thereafter, views of regression coefficients, residuals, and other statistics
+#' @note The 'linreg' function was designed to work just as the 'lm' function in the 'stats' 
+#' package. The 'linreg' function documentation, therefore, also draws upon the 'lm' function
+#' documentation. Review the 'See Also' section
+#' @seealso \code{\link[stats]{lm}}
 #' @param formula an object of class "formula" (or one that can be coerced to that class):
 #' a symbolic description of the model to be fitted. The details of model specification are
 #' given under ‘Details’.

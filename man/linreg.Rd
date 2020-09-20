@@ -34,7 +34,7 @@ An object of class "linreg" is a list containing at least the following componen
 }
 \description{
 The 'linreg' function allows for the linear regression of a dependent variable on
-a set of independent variables and see regression coefficients, residuals, and other statistics
+a set of independent variables, and thereafter, views of regression coefficients, residuals, and other statistics
 }
 \details{
 Models for \code{linreg} are specified symbolically. A typical model has the form \code{response ~ terms} 
@@ -44,6 +44,11 @@ all the terms in first together with all the terms in second with duplicate term
 of the form \code{first:second} or \code{first*second} are recognised exactly the same way as 
 \code{first+second}. Additional arguments passed via ..., if provided, will force the linear model will have no intercept.
 }
+\note{
+The 'linreg' function was designed to work just as the 'lm' function in the 'stats' 
+package. The 'linreg' function documentation, therefore, also draws upon the 'lm' function
+documentation. Review the 'See Also' section
+}
 \examples{
 data("iris")
 linreg(Petal.Length ~ Species, iris)
@@ -52,4 +57,7 @@ linreg(Petal.Length ~ Species, iris)
 \href{https://en.wikipedia.org/wiki/Linear_regression}{Linear Regression}
 \href{https://en.wikipedia.org/wiki/QR_decomposition}{QR decomposition of a Matrix}
 \href{https://genomicsclass.github.io/book/pages/qr_and_regression.html}{Linear Regression with QR decomposition}
+}
+\seealso{
+\code{\link[stats]{lm}}
 }
