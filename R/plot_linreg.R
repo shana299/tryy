@@ -70,7 +70,8 @@ plot.linreg <- function(x, num_labels = 3, labels_by_val = FALSE, ...) {
       ggplot2::labs(title="Scale-Location", y=expression(sqrt(abs(paste("Standardised ","Residuals")))), 
                     x="Fitted values") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + theme_liu() + 
-      ggplot2::geom_text(data=df_for_plot[top_n, ], nudge_x = 0.2)
+      ggplot2::geom_text(data=df_for_plot[top_n, ], ggplot2::aes(label=round(sqrt(abs(df_for_plot$std_res[top_n])), 3)),
+                         nudge_x = 0.2)
     
   }
   
