@@ -18,7 +18,8 @@ Suggests:
     rmarkdown,
     mlbench,
     MASS,
-    caret
+    caret,
+    leaps
 Imports: 
     ggplot2,
     dplyr,

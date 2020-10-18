@@ -5,7 +5,6 @@ vignette: >
   %\VignetteIndexEntry{Ridge Regression using the linear.regression Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{caret}
 ---
 
 ```{r, include = FALSE}
@@ -28,6 +27,7 @@ The regression task itself was to model the variable "medv" in the BostonHousing
 library(linear.regression)
 library(caret)
 library(mlbench)
+library(leaps)
 data(BostonHousing)
 ```
 
