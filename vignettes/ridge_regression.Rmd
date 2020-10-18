@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Ridge Regression using the linear.regression Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{caret}
 ---
 
 ```{r, include = FALSE}
@@ -46,7 +47,7 @@ For the first model, we first turn to the [Forward Selection](https://en.wikiped
 
 ```{r}
 set.seed(3456)
-forward_selection <- train(medv~., data = train, method = "leapForward",
+forward_selection <- caret::train(medv~., data = train, method = "leapForward",
                  tuneGrid = data.frame(nvmax = 1:(ncol(BostonHousing) - 1)))
 forward_selection$results
 summary(forward_selection)
@@ -85,7 +86,7 @@ lambda_selection_method <- list(library = "linear.regression", type = "Regressio
                                 }
                                 )
 set.seed(3456)
-lambda_selection <- train(x = subset(train, select = colnames(train) != "medv"), 
+lambda_selection <-  caret::train(x = subset(train, select = colnames(train) != "medv"), 
                           y = train$medv, form = medv~., method = lambda_selection_method,
                           tuneGrid = data.frame(lambda = c(0.001, 0.01, 0.1, 1, 10, 100)))
 lambda_selection$results
@@ -107,7 +108,7 @@ For model 3, we once again start by searching for a locally optimal value of the
 
 ```{r}
 set.seed(3456)
-cv_lambda_selection <- train(x = subset(train, select = colnames(train) != "medv"), 
+cv_lambda_selection <- caret::train(x = subset(train, select = colnames(train) != "medv"), 
                           y = train$medv, form = medv~., method = lambda_selection_method,
                           tuneGrid = data.frame(lambda = seq(0.1, 5, 0.1)),
                           trControl = trainControl(## 10-fold CV
