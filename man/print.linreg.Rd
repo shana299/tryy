@@ -2,7 +2,7 @@
 % Please edit documentation in R/print_linreg.R
 \name{print.linreg}
 \alias{print.linreg}
-\title{Print Function Call and Regression Coefficients}
+\title{Print Out \code{linreg} Function Call and Regression Coefficients}
 \usage{
 \method{print}{linreg}(x, ...)
 }
@@ -12,5 +12,5 @@
 \item{...}{additional parameters}
 }
 \description{
-Print Function Call and Regression Coefficients
+Print Out \code{linreg} Function Call and Regression Coefficients
 }

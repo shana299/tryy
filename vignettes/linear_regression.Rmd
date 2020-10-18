@@ -1,8 +1,8 @@
 ---
-title: "linear.regression (by Shashi and Rojan)"
+title: "Linear Regression using the linear.regression Package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{linear.regression (by Shashi and Rojan)}
+  %\VignetteIndexEntry{Linear Regression using the linear.regression Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,15 +18,10 @@ knitr::opts_chunk$set(
 library(linear.regression)
 ```
 
+### Package Built By:
 
-
-
-
-### Group members
-
-* Shashi Nagarajan Iyer
 * Rojan Karakaya
-
+* Shashi Nagarajan Iyer
 
 # Usage
 

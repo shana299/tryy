@@ -1,35 +1,38 @@
-#' @exportClass linreg
+#' @exportClass ridgereg
 #' @import stats
 
-#' @title Linreg Class Constructor
+#' @title Ridgereg Class Constructor
 #' @param x A list
-#' @return The same list input with class attribute modified to 'linreg'
+#' @return The same list input with class attribute modified to 'ridgereg'
 
-# build a 'linreg' class constructor
-new_linreg <- function(x = list()) {
+# build a 'ridgereg' class constructor
+new_ridgereg <- function(x = list()) {
   stopifnot(is.list(x))
-  structure(x, class = "linreg")
+  structure(x, class = "ridgereg")
 }
 
-#' @title Linear Regression
-#' @description The 'linreg' function allows for the linear regression of a dependent variable on
-#' a set of independent variables, and thereafter, views of regression coefficients, residuals, and other statistics
-#' @note The 'linreg' function was designed to work just as the 'lm' function in the 'stats' 
-#' package. The 'linreg' function documentation, therefore, also draws upon the 'lm' function
-#' documentation. Review the 'See Also' section.
+#' @title Ridge Regression
+#' @description The 'ridgereg' function runs a ridge regression algorithm on a collection of 
+#' observations of a dependent variable and corresponding independent variables. Thereafter, it
+#' provides views of regression coefficients, residuals, and other statistics
+#' @note The 'ridgereg' function was designed to work like the 'lm.ridge' function in the 'MASS' 
+#' package. Independent variables are standardised before regression is performed; the predict method
+#' on the returned object will use the same means and standard deviations used for standardisation of
+#' the training dataset. Review the 'See Also' section.
+#' @seealso \code{\link[MASS]{lm.ridge}}
 #' @seealso \code{\link[stats]{lm}}
 #' @param formula an object of class "formula" (or one that can be coerced to that class):
 #' a symbolic description of the model to be fitted. The details of model specification are
 #' given under ‘Details’.
 #' @param data a data frame containing the variables in the model
-#' @param qr_method a boolean; TRUE forces linreg to use QR decomposition for the regression
+#' @param lambda hyperparameter for ridge regression
+#' @param qr_method a boolean; TRUE forces ridgereg to use QR decomposition for the regression
 #' @param ... additional arguments to be passed to the \code{model.matrix} function, see 'Details'
-#' @return the function returns an object of class "linreg", which has a number of associated 
-#' methods including \code{\link[linear.regression]{print.linreg}}, 
-#' \code{\link[linear.regression]{pred.linreg}}, \code{\link[linear.regression]{plot.linreg}},
-#' \code{\link[linear.regression]{resid.linreg}}, \code{\link[linear.regression]{summary.linreg}},
-#' and \code{\link[linear.regression]{coef.linreg}}.
-#' The "linreg" object itself is a list containing at least the following components:
+#' @return the function returns an object of class "ridgereg", which has a number of associated 
+#' methods including \code{\link[linear.regression]{print.ridgereg}}, 
+#' \code{\link[linear.regression]{predict.ridgereg}},
+#' and \code{\link[linear.regression]{coef.ridgereg}}.
+#' The "ridgereg" object itself is a list containing at least the following components:
 #' \item{call}{the matched call}
 #' \item{coefficients}{a named vector of coefficients}
 #' \item{fitted_values}{the fitted mean values}
@@ -38,13 +41,12 @@ new_linreg <- function(x = list()) {
 #' \item{residual_variance}{estimated value of the variance of the residuals}
 #' \item{t_values}{t-statistics of the independent variables, that is coefficients/standard-error}
 #' \item{p_values}{p-values for the two-sided t-test with null that coefficients are each zero}
+#' \item{std_means}{a vector of means of the independent variables in the training dataset}
+#' \item{std_sd}{a vector of standard deviations of the independent variables in the training dataset}
 #' @examples
-#' data("iris")
-#' linreg(Petal.Length ~ Species, iris)
-#' @references
-#' \href{https://en.wikipedia.org/wiki/Linear_regression}{Linear Regression}
-#' \href{https://en.wikipedia.org/wiki/QR_decomposition}{QR decomposition of a Matrix}
-#' \href{https://genomicsclass.github.io/book/pages/qr_and_regression.html}{Linear Regression with QR decomposition}
+#' library(mlbench)
+#' data(BostonHousing)
+#' ridgereg(medv ~ crim + zn + indus + chas + nox + rm + age + dis + rad, BostonHousing, lambda = 1)
 #' @details 
 #' Models for \code{linreg} are specified symbolically. A typical model has the form \code{response ~ terms} or
 #' \code{response ~ .}, where 'response' is the (numeric) response vector. In the former form, 'terms' is a series
@@ -56,8 +58,8 @@ new_linreg <- function(x = list()) {
 #' have no intercept.
 #' @export
 
-# main function: linreg
-linreg <- function(formula, data, qr_method = FALSE, ...) {
+# main function: ridgereg
+ridgereg <- function(formula, data, lambda, qr_method = FALSE, ...) {
   
   # check class of data input
   if (class(data) != "data.frame") stop("Data must be input in the data.frame format")
@@ -68,7 +70,7 @@ linreg <- function(formula, data, qr_method = FALSE, ...) {
   
   # extract response (independent) variable
   y <- data[, all_vars[1]]
-  
+
   # check that dependent variable is numeric, else print an error message
   if (!is.numeric(y)) stop("Dependent variable must be numeric")
   
@@ -87,42 +89,43 @@ linreg <- function(formula, data, qr_method = FALSE, ...) {
   add_intercept <- if (length(list(...)) > 0) {FALSE} else {TRUE}
   factor_indep_vars <- names(indep_var_classes[indep_var_classes == "factor"])
   X <- model.matrix(X, factor_indep_vars, add_intercept)
-
-  # check for design matrix invertibility issues
-  invert_issue <- suppressWarnings(!(class(try(solve(t(X) %*% X), silent = TRUE))[1] == "matrix"))
   
-  # calculate output
-
+  # standardise variables (leave intercept out)
+  num_params <- ncol(X) # includes intercept
+  std_means <- sapply(2:num_params, function(x) {mean(X[, x])})
+  std_sd <- sapply(2:num_params, function(x) {sd(X[, x])})
+  X[, 2:num_params] <- sapply(2:num_params, function(x) {
+    (X[, x] - std_means[x - 1]) / std_sd[x - 1]})
+  
+  # check for design matrix invertibility issues
+  lhs <- crossprod(X) + diag(lambda, num_params, num_params)
+  inverted <- try(solve(lhs, silent = FALSE))
+  invert_issue <- suppressWarnings(!(class(inverted)[1] == "matrix"))
+  
   if (qr_method == FALSE & !invert_issue) { # without QR
-
-    coefficients <- as.vector(solve(t(X) %*% X) %*% t(X) %*% y)
+    
+    coefficients <- as.vector(inverted %*% crossprod(X, y))
     names(coefficients) <- colnames(X)
-    preds <- X %*% coefficients
-    residuals <- y - preds
-    df <- nrow(X) - ncol(X)
-    residual_variance <- as.numeric((t(residuals) %*% residuals) / df)
-    variance_coeff <- residual_variance * solve(t(X) %*% X)
     
   } else { # with QR
-  
+    
     if (invert_issue) {warning("*** Using QR Method for solution ***")}
-    df <- nrow(X) - ncol(X)
-    QR <- qr(X)
+    df <- nrow(X) - num_params
+    QR <- qr(lhs)
     Q <- qr.Q(QR)
     R <- qr.R(QR)
     
     # coefficients <- qr.coef(X, y)
-    coefficients <- as.vector(backsolve(R, crossprod(Q,y)))
+    coefficients <- as.vector(backsolve(R, crossprod(Q, crossprod(X, y))))
     names(coefficients) <- colnames(X)
-    # preds <- qr.fitted(X, y)
-    preds <- X %*% coefficients
-  
-    residuals <- y - preds
-    residual_variance <- as.numeric((t(residuals) %*% residuals) / df)
-    variance_coeff <- residual_variance * solve(t(R) %*% R)
     
   }
   
+  preds <- X %*% coefficients
+  residuals <- y - preds
+  df <- nrow(X) - num_params
+  residual_variance <- as.numeric(crossprod(residuals) / df)
+  variance_coeff <- residual_variance * solve(crossprod(X))
   t_values <- coefficients / sqrt(diag(variance_coeff))
   p_values <- sapply(2*(1 - stats::pt(abs(t_values), df)), function(x) {
     if(x < 2e-16) {"<2e-16"} else x})
@@ -131,7 +134,9 @@ linreg <- function(formula, data, qr_method = FALSE, ...) {
   return_object <- list(call = match.call(), coefficients = coefficients, fitted_values = preds,
                         residuals = residuals, df = df, residual_variance = residual_variance,
                         variance_of_coefficients = variance_coeff, t_values = t_values, 
-                        p_values = p_values, all_vars = all_vars)
+                        p_values = p_values, std_means = std_means, std_sd = std_sd, 
+                        all_vars = all_vars)
   
-  return(new_linreg(return_object))
+  return(new_ridgereg(return_object))
+  
 }

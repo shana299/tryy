@@ -1,0 +1,134 @@
+---
+title: "Ridge Regression using the linear.regression Package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Ridge Regression using the linear.regression Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Objective
+This vignette will compare the prediction accuracy of three models:
+
+* a linear regression model, wherein independent variables are chosen via the 'forward-selection' approach
+* a ridge regression model, wherein the hyper-parameter 'lambda' was locally optimised based on the 'training accuracy' (RMSE) metric
+* another ridge regression model, wherein the hyper-parameter 'lambda' was locally optimised based on 10-fold cross-validation
+
+The regression task itself was to model the variable "medv" in the BostonHousing dataset using the independent variables provided. More details about the dataset and the variables therein available [here](https://www.rdocumentation.org/packages/mlbench/versions/2.1-1/topics/BostonHousing).
+
+```{r setup}
+library(linear.regression)
+library(caret)
+library(mlbench)
+data(BostonHousing)
+```
+
+# Split up Training and Test datasets
+Before we run any ML algorithms, we split out the data into training and test datasets (80%-20% split), using the 'caret' package. For reproducibility, we also set seed.
+
+```{r}
+set.seed(3456)
+train_index <- createDataPartition(BostonHousing$medv, p = .8,  list = FALSE,  times = 1)
+
+train <- BostonHousing[train_index, ]
+test <- BostonHousing[-train_index, ]
+```
+
+# Model 1:
+For the first model, we first turn to the [Forward Selection](https://en.wikipedia.org/wiki/Stepwise_regression) approach and select those independent variables which produce the best predictions on the training dataset (as seen via the RMSE measure, which is 'lower the better').
+
+```{r}
+set.seed(3456)
+forward_selection <- train(medv~., data = train, method = "leapForward",
+                 tuneGrid = data.frame(nvmax = 1:(ncol(BostonHousing) - 1)))
+forward_selection$results
+summary(forward_selection)
+```
+
+Notice that the model with a set of 12 out of the 13 available independent variables produced lowest training RMSE. The one variable excluded in the best model was "indus". So let us reproduce the 'best' model and use it to predict 'medv' in the test dataset.
+
+```{r}
+model_1 <- linreg(medv ~ ., subset(train, select = colnames(train) != "indus"))
+y_train_pred_1 <- pred(model_1)
+y_test_pred_1 <- pred(model_1, data = test)
+train_rmse <- sqrt(sum((y_train_pred_1 - train$medv)^2)/nrow(train))
+test_rmse <- sqrt(sum((y_test_pred_1 - test$medv)^2)/nrow(test))
+print(paste("Train RMSE is:", train_rmse, "; Test RMSE is:", test_rmse))
+```
+
+We then obtain test RMSE of 4.086678 units.
+
+# Model 2:
+For model 2, we start by searching for a locally optimal value of the hyper-parameter 'lambda' by performing a [grid search](https://en.wikipedia.org/wiki/Hyperparameter_optimization) for the lambda value which produces the lowest training RMSE.
+
+```{r}
+lambda_selection_method <- list(library = "linear.regression", type = "Regression",
+                                parameters = data.frame(parameter = "lambda", class = "numeric", label = "lambda"),
+                                grid = function(x) {data.frame(lambda = x)}, prob = NULL, sort = NULL,
+                                fit = function(x, y, wts, param, lev, last, weights, classProbs, ...) {
+                                  x <- if (is.data.frame(x)) {x} else {as.data.frame(x)}
+                                  y <- if (is.data.frame(y)) {y} else {as.data.frame(y)}
+                                  
+                                  linear.regression::ridgereg(as.formula(paste0(colnames(y), "~ .")),
+                                                              cbind(y, x), param)
+                                  
+                                },
+                                predict = function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+                                  predict(modelFit, newdata)
+                                }
+                                )
+set.seed(3456)
+lambda_selection <- train(x = subset(train, select = colnames(train) != "medv"), 
+                          y = train$medv, form = medv~., method = lambda_selection_method,
+                          tuneGrid = data.frame(lambda = c(0.001, 0.01, 0.1, 1, 10, 100)))
+lambda_selection$results
+```
+
+We see that among the values searched, lambda value of 1 is locally optimal and produces lowest training RMSE. We thereafter reproduce the 'best' model and use it to predict 'medv' in the test dataset.
+
+```{r}
+model_2 <- ridgereg(medv ~ ., train, lambda = 1)
+y_test_pred_2 <- predict(model_2, data = test)
+rmse <- sqrt(sum((y_test_pred_2 - test$medv)^2)/nrow(test))
+print(rmse)
+```
+
+We then obtain test RMSE of 4.077818 units.
+
+# Model 3:
+For model 3, we once again start by searching for a locally optimal value of the hyper-parameter 'lambda' by performing a [grid search](https://en.wikipedia.org/wiki/Hyperparameter_optimization), but this time using 10-fold cross-validation for evaluation. This grid search is also much more of a 'fine tuning' approach, building upon results seen above.
+
+```{r}
+set.seed(3456)
+cv_lambda_selection <- train(x = subset(train, select = colnames(train) != "medv"), 
+                          y = train$medv, form = medv~., method = lambda_selection_method,
+                          tuneGrid = data.frame(lambda = seq(0.1, 5, 0.1)),
+                          trControl = trainControl(## 10-fold CV
+                           method = "repeatedcv",
+                           number = 10,
+                           ## repeated ten times
+                           repeats = 10))
+cv_lambda_selection$bestTune
+```
+
+We see that among the values searched, lambda value of 2.8 is locally optimal and produces lowest training RMSE. We thereafter reproduce the 'best' model and use it to predict 'medv' in the test dataset.
+
+```{r}
+model_3 <- ridgereg(medv ~ ., train, lambda = 2.8)
+y_test_pred_3 <- predict(model_3, data = test)
+rmse <- sqrt(sum((y_test_pred_3 - test$medv)^2)/nrow(test))
+print(rmse)
+```
+
+We then obtain test RMSE of 4.06409 units.
+
+# Conculsion:
+
+Comparing test RMSE results from the three models developed, we find that all three models deliver test RMSE in the range 4.06 - 4.09 units. In particular, the Ridge Regression model with hyper-parameter tuned using 10-fold CV produced the smallest test RMSE of ~4.06 units.

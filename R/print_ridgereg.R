@@ -1,9 +1,9 @@
-#' @title Print Out \code{linreg} Function Call and Regression Coefficients
-#' @param x an object of class \code{linreg}
+#' @title Print Out \code{ridgereg} Function Call and Coefficients
+#' @param x an object of class \code{ridgereg}
 #' @param ... additional parameters
 #' @export
 
-print.linreg <- function(x, ...) {
+print.ridgereg <- function(x, ...) {
   y <- round(as.numeric(x$coefficients), 3)
   names(y) <- names(x$coefficients)
   cat("Call:\n")

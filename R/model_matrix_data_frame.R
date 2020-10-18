@@ -27,6 +27,10 @@ model.matrix.data.frame <- function(X, factor_indep_vars, add_intercept) {
     
     if (length(factor_levels) == 1) {
       X[, var] <- 1 # degenerate case, convert factor into numeric
+    } else if (all(factor_levels %in% c(0, 1))) { # 0 and 1 are the only factors
+      
+      X[, var] <- as.numeric(X[, var]) # simply convert factor into numeric
+      
     } else {
       for (lev in factor_levels[-1]) {
         X[, paste0(var,lev)] <- sapply(X[, var], function(x) {if(x == lev) {1} else {0}}) # one-hot encoding

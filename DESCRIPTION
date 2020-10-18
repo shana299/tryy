@@ -10,11 +10,17 @@ License: GPL-3 + file LICENSE
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    magrittr
 Suggests: 
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    mlbench,
+    MASS,
+    caret
 Imports: 
-    ggplot2
+    ggplot2,
+    dplyr,
+    nycflights13
 VignetteBuilder: knitr
