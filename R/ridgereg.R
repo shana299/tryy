@@ -1,5 +1,6 @@
 #' @exportClass ridgereg
 #' @import stats
+#' @import caret
 
 #' @title Ridgereg Class Constructor
 #' @param x A list

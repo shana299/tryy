@@ -17,10 +17,10 @@ Suggests:
     knitr,
     rmarkdown,
     mlbench,
-    MASS,
-    caret
+    MASS
 Imports: 
     ggplot2,
     dplyr,
-    nycflights13
+    nycflights13,
+    caret
 VignetteBuilder: knitr
