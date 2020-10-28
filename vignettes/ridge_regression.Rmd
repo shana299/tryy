@@ -71,20 +71,20 @@ For model 2, we start by searching for a locally optimal value of the hyper-para
 
 ```{r}
 lambda_selection_method <- list(library = "linear.regression", type = "Regression",
-                                parameters = data.frame(parameter = "lambda", class = "numeric", label = "lambda"),
-                                grid = function(x) {data.frame(lambda = x)}, prob = NULL, sort = NULL,
-                                fit = function(x, y, wts, param, lev, last, weights, classProbs, ...) {
-                                  x <- if (is.data.frame(x)) {x} else {as.data.frame(x)}
-                                  y <- if (is.data.frame(y)) {y} else {as.data.frame(y)}
-                                  
-                                  linear.regression::ridgereg(as.formula(paste0(colnames(y), "~ .")),
-                                                              cbind(y, x), param)
-                                  
-                                },
-                                predict = function(modelFit, newdata, preProc = NULL, submodels = NULL) {
-                                  predict(modelFit, newdata)
-                                }
-                                )
+    parameters = data.frame(parameter = "lambda", class = "numeric", label = "lambda"),
+    grid = function(x) {data.frame(lambda = x)}, prob = NULL, sort = NULL,
+    fit = function(x, y, wts, param, lev, last, weights, classProbs, ...) {
+      x <- if (is.data.frame(x)) {x} else {as.data.frame(x)}
+      y <- if (is.data.frame(y)) {y} else {as.data.frame(y)}
+      
+      linear.regression::ridgereg(as.formula(paste0(colnames(y), "~ .")),
+                                  cbind(y, x), param)
+      
+    },
+    predict = function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+      predict(modelFit, newdata)
+    }
+    )
 set.seed(3456)
 lambda_selection <-  caret::train(x = subset(train, select = colnames(train) != "medv"), 
                           y = train$medv, form = medv~., method = lambda_selection_method,
