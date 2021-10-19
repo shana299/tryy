@@ -116,7 +116,7 @@ ridgereg <- function(formula, data, lambda, qr_method = FALSE, ...) {
     R <- qr.R(QR)
     
     # coefficients <- qr.coef(X, y)
-    coefficients <- as.vector(backsolve(R, crossprod(Q, crossprod(X, y))))
+    coefficients <- as.vector(solve(crossprod(R)) %*% crossprod(X, y))
     names(coefficients) <- colnames(X)
     
   }

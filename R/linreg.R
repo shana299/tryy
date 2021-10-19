@@ -112,7 +112,7 @@ linreg <- function(formula, data, qr_method = FALSE, ...) {
     R <- qr.R(QR)
     
     # coefficients <- qr.coef(X, y)
-    coefficients <- as.vector(backsolve(R, crossprod(Q,y)))
+    coefficients <- as.vector(solve(crossprod(R)) %*% crossprod(X, y))
     names(coefficients) <- colnames(X)
     # preds <- qr.fitted(X, y)
     preds <- X %*% coefficients
